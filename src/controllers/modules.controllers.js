@@ -583,7 +583,7 @@ modulesController.filterModules = async (req, res) => {
     var software = false;
     var dudas = false;
     var manualUsuario = "https://firebasestorage.googleapis.com/v0/b/tt-ii-b3735.appspot.com/o/Manual%20de%20usuario.pdf?alt=media&token=55bbf3cb-91af-40b9-a83a-27db6b09360d";
-    let category = req.params.category;
+    var category = req.params.category;
     
     if(category == "Hardware") {
         hardware = true
@@ -591,9 +591,10 @@ modulesController.filterModules = async (req, res) => {
         software = true
     } else {
         dudas = true
+        category = "Preguntas frecuentes"
     }
     
-    const modules = await Module.find({category: req.params.category}).sort({ nameModule: 'asc' });
+    const modules = await Module.find({category: category}).sort({ nameModule: 'asc' });
     res.render('viewsUser/user', { modules, hardware, software, dudas, manualUsuario});
     
 }
