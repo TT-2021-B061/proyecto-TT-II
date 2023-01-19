@@ -1,0 +1,80 @@
+<div class="container mt-3">
+    <h1 class="text-center mb-3">Bienvenido {{user.name}} {{user.surname}}</h1>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            {{#if hardware}}
+                <p class="h5"><a class="nav-link active" href="/modulesCourse/filterModules/Hardware">Hardware</a></p>
+            {{else}}
+                <p class="h5"><a class="nav-link" href="/modulesCourse/filterModules/Hardware">Hardware</a></p>
+            {{/if}}
+        </li>
+        <li class="nav-item">
+            {{#if software}}
+                <p class="h5"><a class="nav-link active" href="/modulesCourse/filterModules/Software">Software</a></p>
+            {{else}}
+                <p class="h5"><a class="nav-link" href="/modulesCourse/filterModules/Software">Software</a></p>
+            {{/if}}
+            
+        </li>
+        <li class="nav-item">
+            {{#if dudas}}
+                <p class="h5"><a class="nav-link active" href="/modulesCourse/filterModules/Dudas">Preguntas frecuentes</a></p>
+            {{else}}
+                <p class="h5"><a class="nav-link" href="/modulesCourse/filterModules/Dudas">Preguntas frecuentes</a></p>
+            {{/if}}
+        </li>
+    </ul>
+    <div class="row mb-3 mt-3">
+        <h3 class="text-center mb-3" >
+            Haz completado
+            {{#avanceCurso user.avances modules}}
+            {{/avanceCurso}}
+            % de este curso
+        </h3>
+        {{#each modules}}
+            <div class="card-group mb-3">
+                <div class="card flex-row mb-3 box-shadow">
+                    <img src="{{img}}" class="card-img-left" width="200" height="auto">
+                    <div class="card-body d-flex flex-column">
+                        {{#ifModuloCompletado ../user.avances nameModule}}
+                            <div class="d-flex justify-content-end">
+                                <div class="flex-shrink-0">
+                                    <img src="https://firebasestorage.googleapis.com/v0/b/tt-ii-b3735.appspot.com/o/check.png?alt=media&token=ab9b6eef-aa08-4dc6-b9b0-8652def336e9" 
+                                        alt="check" style="height: 20px; width:20px">
+                                </div>
+                                <div class="ms-2">Módulo completado</div>
+                            </div>
+                        {{/ifModuloCompletado}}
+                        <h5 class="card-title fw-bold">{{nameModule}}</h5>
+                        <h5 class="card-text">Categoría: {{category}}</h5>
+                        <p class="card-text">{{descriptionModule}}</p>
+                        <form class="mt-auto" action="/modulesCourse/showModule/{{id}}">
+                            {{#ifModuloCompletado ../user.avances nameModule}}
+                                <button class="btn btn-success d-grid gap-3 col-12 mx-auto mb-2" type="submit">Completado</button>
+                            {{else}}
+                                <button class="btn btn-primary d-grid gap-3 col-12 mx-auto mb-2" type="submit" >Comenzar</button>
+                            {{/ifModuloCompletado}}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+        {{#if dudas}}
+            <div class="card-group mb-3">
+                <div class="card flex-row mb-3 box-shadow">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/tt-ii-b3735.appspot.com/o/cliente_book_emoji.png?alt=media&token=7e33aecf-fa20-46e9-a90e-104490306020" class="card-img-left" width="200" height="auto">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold">Manual de usuario</h5>
+                        <h5 class="card-text">Categoría: Dudas</h5>
+                        <p class="card-text">Si necesita ayuda para utilizar esta aplicación Web puede consultar el manual de usuario,
+                            dando clic en el siguiente botón.
+                        </p>
+                        <a href="{{manualUsuario}}" class="btn btn-primary d-grid gap-3 col-12 mx-auto mb-2">Consultar manual</a>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+
+</div>

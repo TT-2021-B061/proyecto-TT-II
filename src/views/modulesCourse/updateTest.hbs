@@ -1,0 +1,490 @@
+<div class="container mt-3 mb-5">
+    <div class="row justify-content-center">
+
+        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6 col-xxl-5 align-self-center">
+            <h1 class="text-center mb-3 mt-2">Cuestionario del módulo</h1>
+            {{#if module}}
+                {{module.id}}
+            {{/if}}
+            <form action='/modulesCourse/updateTest/{{module._id}}' id="formQuestions" method="POST">
+                <div class="d-grid gap-3 col-6 mx-auto mb-3">
+                    <button class="btn btn-success" type="submit">Añadir cuestionario</button>
+                </div>
+            </form>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+                
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Agregar pregunta
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><button class="dropdown-item" id="addQuestion">Opción multiple</button></li>
+                        <li><button class="dropdown-item" id="addOpenQuestion">Respuesta abierta</button></li>
+                        <li><button class="dropdown-item" id="addMatchQuestion">Relación de columnas</button></li>
+                    </ul>
+                </div>
+                <button class="btn btn-danger" id="deleteQuestion">Eliminar pregunta</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let numberQuestion = [];
+    var number = 0;
+    const form = document.getElementById("formQuestions");
+
+    let btnAdd = document.getElementById("addQuestion");
+    btnAdd.onclick = addQuestion;
+
+    let btnAddOpen = document.getElementById("addOpenQuestion");
+    btnAddOpen.onclick = addOpenQuestion;
+
+
+    let match = [];
+    var numberMatch = 0;
+    let btnAddMatch = document.getElementById("addMatchQuestion");
+    btnAddMatch.onclick = addMatchQuestion;
+
+    let btnDelete = document.getElementById("deleteQuestion");
+    btnDelete.onclick = deleteQuestion;
+
+
+    function addQuestion() {
+        
+        number++;
+        console.log(number);
+        // *************** PREGUNTA ****************
+        // DIV
+        var div = document.createElement('div');
+        div.setAttribute('class', 'mb-3');
+
+        var line = document.createElement('hr');
+        div.insertAdjacentElement('beforeend', line);
+
+        // LABEL (PREGUNTA)
+        var labelQuestion = document.createElement('label');
+        labelQuestion.setAttribute('for', `pregunta`);
+        labelQuestion.setAttribute('class', 'form-label h5');
+        labelQuestion.textContent = `Pregunta ${number}`; 
+
+
+        // INPUT (PREGUNTA)
+        var inputQuestion = document.createElement('input');
+        inputQuestion.setAttribute('type', 'text');
+        inputQuestion.setAttribute('class', 'form-control');
+        inputQuestion.setAttribute('name', `pregunta${number}`);
+        inputQuestion.setAttribute('id', `pregunta`);
+        inputQuestion.setAttribute('placeholder', `Escriba pregunta`);
+        inputQuestion.setAttribute('required', ``); 
+
+
+        // *************** RESPUESTAS ****************
+        // ROW
+        var row = document.createElement('div');
+        row.setAttribute('class', 'row mt-3');
+        // row.setAttribute('id', `respuestas${number}`);
+
+        // COL
+        var col1 = document.createElement('div');
+        col1.setAttribute('class', 'col-3'); 
+
+        var col2 = document.createElement('div');
+        col2.setAttribute('class', 'col-3'); 
+
+        var col3 = document.createElement('div');
+        col3.setAttribute('class', 'col-3'); 
+
+        var col4 = document.createElement('div');
+        col4.setAttribute('class', 'col-3'); 
+
+
+        // INPUT GROUP aqui crea los recuadros para las opciones
+        var inputGroupA = document.createElement('div');
+        inputGroupA.setAttribute('class', 'input-group');
+
+        var inputGroupB = document.createElement('div');
+        inputGroupB.setAttribute('class', 'input-group');
+
+        var inputGroupC = document.createElement('div');
+        inputGroupC.setAttribute('class', 'input-group');
+
+        var inputGroupD = document.createElement('div');
+        inputGroupD.setAttribute('class', 'input-group');
+
+
+        // INPUT TEXT aqui van las respuestas posibles
+        var inputTextA = document.createElement('div');
+        inputTextA.setAttribute('class', 'input-group-text');
+        inputTextA.textContent = "A"
+
+        var inputTextB = document.createElement('div');
+        inputTextB.setAttribute('class', 'input-group-text');
+        inputTextB.textContent = "B"
+
+        var inputTextC = document.createElement('div');
+        inputTextC.setAttribute('class', 'input-group-text');
+        inputTextC.textContent = "C"
+
+        var inputTextD = document.createElement('div');
+        inputTextD.setAttribute('class', 'input-group-text');
+        inputTextD.textContent = "D"
+
+
+
+        // (INPUT) RESPUESTAS
+        var inputAnswer1 = document.createElement('input')
+        inputAnswer1.setAttribute('type', 'text');
+        inputAnswer1.setAttribute('class', 'form-control');
+        inputAnswer1.setAttribute('name', `pregunta${number}`);
+        inputAnswer1.setAttribute('required', "");
+        
+        var inputAnswer2 = document.createElement('input')
+        inputAnswer2.setAttribute('type', 'text');
+        inputAnswer2.setAttribute('class', 'form-control');
+        inputAnswer2.setAttribute('name', `pregunta${number}`);
+        inputAnswer2.setAttribute('required', "");
+
+        var inputAnswer3 = document.createElement('input')
+        inputAnswer3.setAttribute('type', 'text');
+        inputAnswer3.setAttribute('class', 'form-control');
+        inputAnswer3.setAttribute('name', `pregunta${number}`);
+        inputAnswer3.setAttribute('required', "");
+
+        var inputAnswer4 = document.createElement('input')
+        inputAnswer4.setAttribute('type', 'text');
+        inputAnswer4.setAttribute('class', 'form-control');
+        inputAnswer4.setAttribute('name', `pregunta${number}`);
+        inputAnswer4.setAttribute('required', "");
+
+
+        inputGroupA.insertAdjacentElement('beforeend', inputTextA);
+        inputGroupA.insertAdjacentElement('beforeend', inputAnswer1);
+
+        inputGroupB.insertAdjacentElement('beforeend', inputTextB);
+        inputGroupB.insertAdjacentElement('beforeend', inputAnswer2);
+
+        inputGroupC.insertAdjacentElement('beforeend', inputTextC);
+        inputGroupC.insertAdjacentElement('beforeend', inputAnswer3);
+
+        inputGroupD.insertAdjacentElement('beforeend', inputTextD);
+        inputGroupD.insertAdjacentElement('beforeend', inputAnswer4);
+
+
+        col1.insertAdjacentElement('beforeend',inputGroupA);
+        col2.insertAdjacentElement('beforeend',inputGroupB);
+        col3.insertAdjacentElement('beforeend',inputGroupC);
+        col4.insertAdjacentElement('beforeend',inputGroupD);
+
+        row.insertAdjacentElement('beforeend', col1);
+        row.insertAdjacentElement('beforeend', col2);
+        row.insertAdjacentElement('beforeend', col3);
+        row.insertAdjacentElement('beforeend', col4);
+
+
+        // OPCIONES
+        var divOptions = document.createElement('div');
+        divOptions.setAttribute('class', 'mt-3 mb-3');
+
+        // Select
+        var select = document.createElement('select');
+        select.setAttribute('class', 'form-select');
+        select.setAttribute('required', '');
+        select.setAttribute('name', `pregunta${number}`)
+        // Opciones
+        var defaultOption = document.createElement('option');
+        defaultOption.setAttribute('selected', '');
+        defaultOption.setAttribute('disabled', '');
+        defaultOption.setAttribute('value', '');
+        defaultOption.textContent = 'Respuesta';
+
+        var optionA = document.createElement('option');
+        optionA.setAttribute('value', 'A');
+        optionA.textContent = "A";
+
+        var optionB = document.createElement('option');
+        optionB.setAttribute('value', 'B');
+        optionB.textContent = "B";
+
+        var optionC = document.createElement('option');
+        optionC.setAttribute('value', 'C');
+        optionC.textContent = "C";
+
+        var optionD = document.createElement('option');
+        optionD.setAttribute('value', 'D');
+        optionD.textContent = "D";
+
+
+        select.insertAdjacentElement('beforeend', defaultOption);
+        select.insertAdjacentElement('beforeend', optionA);
+        select.insertAdjacentElement('beforeend', optionB);
+        select.insertAdjacentElement('beforeend', optionC);
+        select.insertAdjacentElement('beforeend', optionD);
+
+        divOptions.insertAdjacentElement('beforeend', select)
+
+        div.insertAdjacentElement('beforeend', labelQuestion);
+        div.insertAdjacentElement('beforeend', inputQuestion);
+        div.insertAdjacentElement('beforeend', row);
+        div.insertAdjacentElement('beforeend', divOptions);
+        form.appendChild(div);
+        
+    }
+    
+    function addOpenQuestion() {
+        number++;
+        console.log(number);
+        // *************** PREGUNTA ****************
+        // DIV
+        var div = document.createElement('div');
+        div.setAttribute('class', 'mb-3');
+        
+        var line = document.createElement('hr');
+        div.insertAdjacentElement('beforeend', line);
+
+        // LABEL (PREGUNTA)
+        var labelQuestion = document.createElement('label');
+        labelQuestion.setAttribute('for', `pregunta`);
+        labelQuestion.setAttribute('class', 'form-label h5');
+        labelQuestion.textContent = `Pregunta ${number}`; 
+
+        // INPUT (PREGUNTA)
+        var inputQuestion = document.createElement('input');
+        inputQuestion.setAttribute('type', 'text');
+        inputQuestion.setAttribute('class', 'form-control mb-3');
+        inputQuestion.setAttribute('name', `pregunta${number}`);
+        inputQuestion.setAttribute('id', `pregunta`);
+        inputQuestion.setAttribute('placeholder', `Escriba pregunta`);
+        inputQuestion.setAttribute('required', ``); 
+
+        // *************** RESPUESTA ****************
+        // DIV
+        var div = document.createElement('div');
+        div.setAttribute('class', 'mb-3');
+        // LABEL (RESPUESTA)
+        var labelAnswer = document.createElement('label');
+        labelAnswer.setAttribute('for', `respuesta`);
+        labelAnswer.setAttribute('class', 'form-label h6');
+        labelAnswer.textContent = `Respuesta a pregunta ${number}`; 
+
+        // INPUT (RESPUESTA)
+        var inputAnswer = document.createElement('input');
+        inputAnswer.setAttribute('type', 'text');
+        inputAnswer.setAttribute('class', 'form-control');
+        inputAnswer.setAttribute('name', `pregunta${number}`);
+        inputAnswer.setAttribute('id', `respuesta`);
+        inputAnswer.setAttribute('placeholder', `Escriba la respuesta de la pregunta ${number}`);
+        inputAnswer.setAttribute('required', ``); 
+
+        div.insertAdjacentElement('beforeend', labelQuestion);
+        div.insertAdjacentElement('beforeend', inputQuestion);
+        div.insertAdjacentElement('beforeend', labelAnswer);
+        div.insertAdjacentElement('beforeend', inputAnswer);
+        form.appendChild(div);
+    }
+
+    function addMatchQuestion(){
+        number++;
+        console.log(number);
+        // *************** PREGUNTA ****************
+        // DIV
+        var div = document.createElement('div');
+        div.setAttribute('class', 'mb-3');
+        div.setAttribute('id', `preguntamatch${number}`);
+
+        var line = document.createElement('hr');
+        div.insertAdjacentElement('beforeend', line);
+
+        var buttonAddPair = document.createElement('button');
+        buttonAddPair.setAttribute('class', 'btn btn-primary mt-3');
+        buttonAddPair.setAttribute('type', 'button');
+        buttonAddPair.setAttribute('onclick', `addMatchPair(${number})`);
+        buttonAddPair.textContent = 'Agregar pareja';
+        var buttonRemovePair = document.createElement('button');
+        buttonRemovePair.setAttribute('class', 'btn btn-danger mt-3');
+        buttonRemovePair.setAttribute('type', 'button');
+        buttonRemovePair.setAttribute('onclick', `removeMatchPair(${number})`);
+        buttonRemovePair.textContent = 'Eliminar pareja';
+
+        match[`${number}`-1] = 0;
+
+        // LABEL (PREGUNTA)
+        var labelQuestion = document.createElement('label');
+        labelQuestion.setAttribute('for', `pregunta`);
+        labelQuestion.setAttribute('class', 'form-label h5');
+        labelQuestion.textContent = `Pregunta ${number}`; 
+
+
+        // INPUT (PREGUNTA)
+        var inputQuestion = document.createElement('input');
+        inputQuestion.setAttribute('type', 'text');
+        inputQuestion.setAttribute('class', 'form-control');
+        inputQuestion.setAttribute('name', `pregunta${number}`);
+        inputQuestion.setAttribute('id', `pregunta`);
+        inputQuestion.setAttribute('placeholder', `Escriba pregunta`);
+        inputQuestion.setAttribute('required', ``); 
+
+
+        // *************** RESPUESTAS ****************
+        // ROW
+        var row = document.createElement('div');
+        row.setAttribute('class', 'row mt-3');
+        // row.setAttribute('id', `respuestas${number}`);
+
+        // COL
+        var col1 = document.createElement('div');
+        col1.setAttribute('class', 'col'); 
+
+        var col2 = document.createElement('div');
+        col2.setAttribute('class', 'col'); 
+
+
+        // INPUT GROUP aqui crea los recuadros para las opciones
+        var inputGroupA = document.createElement('div');
+        inputGroupA.setAttribute('class', 'input-group');
+
+        var inputGroupB = document.createElement('div');
+        inputGroupB.setAttribute('class', 'input-group');
+
+
+        // INPUT TEXT aqui van las respuestas posibles
+        var inputTextA = document.createElement('div');
+        inputTextA.setAttribute('class', 'input-group-text');
+        inputTextA.textContent = match[`${number}`-1];
+
+        var inputTextB = document.createElement('div');
+        inputTextB.setAttribute('class', 'input-group-text');
+        inputTextB.textContent = match[`${number}`-1];
+
+        // (INPUT) RESPUESTAS
+        var inputAnswer1 = document.createElement('input')
+        inputAnswer1.setAttribute('type', 'text');
+        inputAnswer1.setAttribute('class', 'form-control');
+        inputAnswer1.setAttribute('name', `pregunta${number}`);
+        inputAnswer1.setAttribute('required', "");
+        inputAnswer1.setAttribute('placeholder', `Escriba elemento `+match[`${number}`-1]);
+        
+        var inputAnswer2 = document.createElement('input')
+        inputAnswer2.setAttribute('type', 'text');
+        inputAnswer2.setAttribute('class', 'form-control');
+        inputAnswer2.setAttribute('name', `pregunta${number}`);
+        inputAnswer2.setAttribute('required', "");
+        inputAnswer2.setAttribute('placeholder', `Escriba par de elemento `+match[`${number}`-1]);
+
+
+        inputGroupA.insertAdjacentElement('beforeend', inputTextA);
+        inputGroupA.insertAdjacentElement('beforeend', inputAnswer1);
+
+        inputGroupB.insertAdjacentElement('beforeend', inputTextB);
+        inputGroupB.insertAdjacentElement('beforeend', inputAnswer2);
+
+
+        col1.insertAdjacentElement('beforeend',inputGroupA);
+        col2.insertAdjacentElement('beforeend',inputGroupB);
+
+        row.insertAdjacentElement('beforeend', col1);
+        row.insertAdjacentElement('beforeend', col2);
+
+        div.insertAdjacentElement('beforeend', labelQuestion);
+        div.insertAdjacentElement('beforeend', inputQuestion);
+        
+        div.insertAdjacentElement('beforeend', buttonAddPair);
+        div.insertAdjacentElement('beforeend', buttonRemovePair);
+        
+        div.insertAdjacentElement('beforeend', row);
+        //var line = document.createElement('hr');
+        //div.insertAdjacentElement('beforeend', line);
+        form.appendChild(div);
+    }
+
+    function addMatchPair(numeroDiv){
+        match[`${numeroDiv}`-1]++;
+        console.log("Añadir par");
+        let div = document.getElementById(`preguntamatch${numeroDiv}`);
+        // ROW
+        var row = document.createElement('div');
+        row.setAttribute('class', 'row mt-3');
+        // row.setAttribute('id', `respuestas${number}`);
+
+        // COL
+        var col1 = document.createElement('div');
+        col1.setAttribute('class', 'col'); 
+
+        var col2 = document.createElement('div');
+        col2.setAttribute('class', 'col'); 
+
+
+        // INPUT GROUP aqui crea los recuadros para las opciones
+        var inputGroupA = document.createElement('div');
+        inputGroupA.setAttribute('class', 'input-group');
+
+        var inputGroupB = document.createElement('div');
+        inputGroupB.setAttribute('class', 'input-group');
+
+
+        // INPUT TEXT aqui van las respuestas posibles
+        var inputTextA = document.createElement('div');
+        inputTextA.setAttribute('class', 'input-group-text');
+        inputTextA.textContent = match[`${numeroDiv}`-1];
+
+        var inputTextB = document.createElement('div');
+        inputTextB.setAttribute('class', 'input-group-text');
+        inputTextB.textContent = match[`${numeroDiv}`-1];
+
+        // (INPUT) RESPUESTAS
+        var inputAnswer1 = document.createElement('input')
+        inputAnswer1.setAttribute('type', 'text');
+        inputAnswer1.setAttribute('class', 'form-control');
+        inputAnswer1.setAttribute('name', `pregunta${number}`);
+        inputAnswer1.setAttribute('required', "");
+        inputAnswer1.setAttribute('placeholder', `Escriba elemento `+match[`${numeroDiv}`-1]);
+        
+        var inputAnswer2 = document.createElement('input')
+        inputAnswer2.setAttribute('type', 'text');
+        inputAnswer2.setAttribute('class', 'form-control');
+        inputAnswer2.setAttribute('name', `pregunta${number}`);
+        inputAnswer2.setAttribute('required', "");
+        inputAnswer2.setAttribute('placeholder', `Escriba par de elemento `+match[`${numeroDiv}`-1]);
+
+
+        inputGroupA.insertAdjacentElement('beforeend', inputTextA);
+        inputGroupA.insertAdjacentElement('beforeend', inputAnswer1);
+
+        inputGroupB.insertAdjacentElement('beforeend', inputTextB);
+        inputGroupB.insertAdjacentElement('beforeend', inputAnswer2);
+
+
+        col1.insertAdjacentElement('beforeend',inputGroupA);
+        col2.insertAdjacentElement('beforeend',inputGroupB);
+
+        row.insertAdjacentElement('beforeend', col1);
+        row.insertAdjacentElement('beforeend', col2);
+
+        div.insertAdjacentElement('beforeend', row);
+    }
+
+    function removeMatchPair(numeroDiv){
+        let div = document.getElementById(`preguntamatch${numeroDiv}`);
+        if(match[`${numeroDiv}`-1] == 0) {
+            console.log("No hay más parejas");
+        } else {
+            match[`${numeroDiv}`-1]--;
+            console.log(match)
+            div.removeChild(div.lastElementChild);
+        }
+    }
+
+    function deleteQuestion() {
+        if(number == 0) {
+            console.log("No hay más preguntas");
+        } else {
+            number--;
+            console.log(number)
+            form.removeChild(form.lastElementChild);
+        }
+    }
+
+</script>
+
+

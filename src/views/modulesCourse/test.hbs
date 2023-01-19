@@ -1,0 +1,582 @@
+<div class="container mb-5">
+
+    <div class="row justify-content-left">
+        <div class="col align-self-center">
+            <h1 class="text-center">{{nombreModulo}}</h1>
+            <h1 class="text-center mb-3 mt-2 text-primary">Cuestionario</h1>
+			      <h4 class="text-center mb-3 text-danger">Se necesita una calificación mínima de 80% para aprobar el módulo</h4>
+            <form action="/modulesCourse/results" method="POST" class="mx-5">
+                {{#each preguntas}}
+                    {{#ifEquals this.[0] "abierta"}}{{!-- Si esto se cumple entonces es una pregunta abierta --}}
+                        <h3 class=" mb-3 mt-2">{{@index }} - {{this.[1]}}</h3>
+                        <div class="form-floating">
+                            <input class="form-control" name="respuestas" id="floatingSelect" required>
+                            <label for="floatingSelect">Escribe tu respuesta</label>
+                        </div>
+                    {{/ifEquals}}
+
+                    {{#ifEquals this.[0] "multiple"}} {{!-- Si esto se cumple entonces es una pregunta de opcion multiple --}}
+                        <h3 class=" mb-3 mt-2">{{@index }} - {{this.[1]}}</h3>
+                        <div class="row my-4">
+                            <div class="col"><label class="form-label h6 text-primary">A&#41; {{this.[2]}}</label></div>
+                            <div class="col"><label class="form-label h6 text-primary">B&#41; {{this.[3]}}</label></div>
+                            <div class="col"><label class="form-label h6 text-primary">C&#41; {{this.[4]}}</label></div>
+                            <div class="col"><label class="form-label h6 text-primary">D&#41; {{this.[5]}}</label></div>
+                        </div>
+
+                        <div class="form-floating">
+                            <select class="form-select" name="respuestas" id="floatingSelect" aria-label="Floating label select example" required>
+                                {{!-- <option selected>Eliga una de las opciones</option> --}}
+                                <option value="A" selected>A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                            <label for="floatingSelect">Selecciona una opción</label>
+                        </div>
+                    {{/ifEquals}}
+
+                    {{#ifEquals this.[0] "relaciona"}} {{!-- Si esto se cumple entonces es una pregunta de relacion de columnas --}}
+                        <h3 class=" mb-3 mt-2">{{@index }} - {{this.[1]}}</h3>
+                        <div class="row" id="box{{@index }}">
+                            
+                        </div>
+                    {{/ifEquals}}
+
+                    {{#ifEquals this.[0] "lista"}} {{!-- Si esto se cumple entonces es una pregunta de relacion de columnas --}}
+                        <h3 class=" mb-3 mt-2">{{@index }} - {{this.[1]}}</h3>
+                        <div class="form-floating">
+                            <select class="form-select" name="respuestas" id="floatingSelectLista{{@index }}" aria-label="Floating label select example" required>
+                                {{!-- <option selected>Eliga una de las opciones</option> --}}
+                            </select>
+                            <label for="floatingSelectLista{{@index }}">Selecciona una opción</label>
+                        </div>
+                    {{/ifEquals}}
+
+                    {{#ifEquals this.[0] "draganddrop"}}
+                        <h3 class=" mb-3 mt-2">{{@index }} - {{this.[1]}}</h3>
+                        
+                        <div id="dragdrop{{@index }}">
+                            
+                        </div>
+                    {{/ifEquals}}
+
+                    {{#ifLegacy this.[0]}} {{!-- Validamos si es un cuestionario con el viejo formato --}}
+                        <h3 class=" mb-3 mt-2">{{@index }} - {{this.[0]}}</h3>
+                        <div class="row my-4">
+                            <div class="col"><label class="form-label h6 text-primary">A&#41; {{this.[1]}}</label></div>
+                            <div class="col"><label class="form-label h6 text-primary">B&#41; {{this.[2]}}</label></div>
+                            <div class="col"><label class="form-label h6 text-primary">C&#41; {{this.[3]}}</label></div>
+                            <div class="col"><label class="form-label h6 text-primary">D&#41; {{this.[4]}}</label></div>
+                        </div>
+
+                        <div class="form-floating">
+                            <select class="form-select" name="respuestas" id="floatingSelect" aria-label="Floating label select example" required>
+                                {{!-- <option selected>Eliga una de las opciones</option> --}}
+                                <option value="A" selected>A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                            <label for="floatingSelect">Selecciona una opción</label>
+                        </div>
+                    {{/ifLegacy}}    
+
+                    <hr>
+                {{/each}}
+                <div class="d-grid gap-2 d-md-flex justify-content-center pt-3">
+                    <button type="submit" class="btn btn-primary mt-4 btn-lg">Finalizar cuestionario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var divBox;
+    var listaParejas = [];
+    var listaIndices = [];
+    var listaRespuestasLista = [];
+    // desordenando las parejas
+    {{#each preguntas}}
+        if ("{{this.[0]}}" == "relaciona") {
+            {{#each this}}
+                if ({{@index }} > 1 && {{@index }} % 2 == 0){
+                    listaParejas.push("{{this}}");
+                    listaIndices.push({{@index }}/2);
+                }
+            {{/each}}
+        }
+    {{/each}}
+    {{#each preguntas}}
+        if ("{{this.[0]}}" == "relaciona") {
+            divBox = document.getElementById("box{{@index }}")
+            let divMatch = document.createElement("div");
+            divMatch.setAttribute("id", "relacionar{{@index }}");
+            divMatch.setAttribute("class", "col");
+            let divPair = document.createElement("div");
+            divPair.setAttribute("id", "pares{{@index }}");
+            divPair.setAttribute("name", "pares{{@index }}");
+            divPair.setAttribute("class", "col");
+            
+            let listOptions = [];
+            {{#each this}}
+              if ({{@index }} > 1){
+                if ( {{@index }} % 2 != 0){
+                  let option = document.createElement("option");
+                  option.setAttribute("value", "{{this}}");
+                  option.innerHTML = "{{this}}";
+                  listOptions.push(option);
+                }
+              }
+            {{/each}}
+
+            {{#each this}}
+                if ({{@index }} > 1){
+                    if ( {{@index }} % 2 == 0){ // si es par es una pregunta
+                        divMatch.insertAdjacentHTML('beforeend', `
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">${listaIndices[{{@index }}/2 -1]}</span>
+                                <textarea class="form-control" style="min-width: 90%" disabled>${listaParejas[{{@index }}/2 -1]}</textarea>
+                            </div>
+                        `);
+                    }else{ // si es impar es una pareja
+                        
+						let divInputSelect = document.createElement("div");
+						divInputSelect.setAttribute("class", "input-group mb-3");
+						let span = document.createElement("span");
+						span.setAttribute("class", "input-group-text");
+						span.innerHTML = listaIndices[(({{@index }}-1)/2)-1];
+						
+						let divFormSelect = document.createElement("div");
+						divFormSelect.setAttribute("class", "form-floating");
+						let select = document.createElement("select");
+						select.setAttribute("class", "form-select");
+						select.setAttribute("name", "respuestas");
+						select.setAttribute("id", `floatingSelectLista{{@index }}x10`);
+						select.setAttribute("aria-label", "Floating label select example");
+						select.setAttribute("required", "");
+						let label = document.createElement("label");
+						label.setAttribute("for", `floatingSelectLista{{@index }}x10`);
+						label.innerHTML = "Selecciona una opción";
+						
+						
+						divInputSelect.appendChild(span);
+						divFormSelect.appendChild(select);
+						divFormSelect.appendChild(label);
+						divInputSelect.appendChild(divFormSelect);
+						divPair.appendChild(divInputSelect);
+						
+						listOptions.sort( () => Math.random() - 0.5).forEach((option) => {
+							let optionClone = option.cloneNode(true);
+                            select.insertAdjacentElement('beforeend',optionClone);
+                        });
+						
+						divBox.insertAdjacentElement('beforeend',divPair);
+                    }
+                }
+            {{/each}}
+            
+            divBox.insertAdjacentElement('beforeend',divMatch);
+            divBox.insertAdjacentElement('beforeend',divPair);
+        }else if ("{{this.[0]}}" == "lista") {
+            divLista = document.getElementById("floatingSelectLista{{@index }}");
+            {{#each this}}
+                if ({{@index }} > 1 && {{@index }} < 3){
+                    listaRespuestasLista = "{{this}}".split(",");
+                    listaRespuestasLista.forEach(element => {
+                        divLista.insertAdjacentHTML('beforeend', `
+                            <option value="${element}">${element}</option>
+                        `);
+                    });
+                }
+            {{/each}}
+        }
+    {{/each}}
+
+    function shuffle(array1) {
+        let currentIndex = array1.length,  randomIndex;
+
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            [array1[currentIndex], array1[randomIndex]] = [array1[randomIndex], array1[currentIndex]];
+        }
+
+        return array1;
+    }
+    
+</script>
+
+<script>
+let correct = 0;
+let total = 0;
+let totalDraggableItems ;
+let totalMatchingPairs;
+
+let dragdropDiv;
+let draggableItems;
+let matchingPairs;
+let scoreSection;
+    
+{{#each preguntas}}
+    if ("{{this.[0]}}" == "draganddrop") {
+        var listaULRS = [];
+        var listaIndices = [];
+        var listaIndex = [];
+        let longi = {{this.length}};
+            {{#each this}}
+                if ({{@index }} > 1 && {{@index }} % 2 != 0){
+                    listaIndices.push("{{this}}");
+                }else{
+                    if ({{@index }} > 1){
+                        listaULRS.push("{{this}}");
+                    }
+                }
+            {{/each}}
+            
+            //let inputDragDrop = document.getElementById("respuestaDragDrop");
+            let inputDragDrop = document.createElement("input");
+            inputDragDrop.setAttribute("class", "form-control");
+            inputDragDrop.setAttribute("name", "respuestas");
+            inputDragDrop.setAttribute("id", "respuestaDragDrop{{@index }}");
+            inputDragDrop.setAttribute("type", "hidden");
+            inputDragDrop.value = listaIndices;
+
+
+        totalDraggableItems = ({{this.length}} - 2)/2;
+        totalMatchingPairs = ({{this.length}} - 2)/2;
+        let paresTotales = {{this.length}};
+
+        dragdropDiv = document.getElementById("dragdrop{{@index }}");
+        scoreSection = document.createElement("section");
+        scoreSection.setAttribute("class", "score");
+        dragdropDiv.appendChild(scoreSection);
+        draggableItems = document.createElement("section");
+        draggableItems.setAttribute("class", "draggable-items");
+        dragdropDiv.appendChild(draggableItems);
+        matchingPairs = document.createElement("section");
+        matchingPairs.setAttribute("class", "matching-pairs");
+        dragdropDiv.appendChild(matchingPairs);
+
+        dragdropDiv.appendChild(inputDragDrop);
+
+        let draggableElements;
+        let droppableElements;
+
+        initiateGame();
+
+        function initiateGame() {
+        
+        let indice = 0;
+        // Create "draggable-items" and append to DOM
+        listaULRS.forEach(element => {
+            draggableItems.insertAdjacentHTML("beforeend", `
+              <image class="draggable" src="${element}" id="${listaIndices[indice]}" draggable="true" "></image>
+            `);
+            indice++;
+        });
+        
+        shuffle(listaIndices);
+        
+        listaIndices.forEach(element => {
+            matchingPairs.insertAdjacentHTML("beforeend", `
+              <div class="matching-pair">
+                  <span class="label">${element}</span>
+                  <span class="droppable" data-brand="${element}"></span>
+              </div>
+            `);
+        });
+        
+        draggableElements = document.querySelectorAll(".draggable");
+        droppableElements = document.querySelectorAll(".droppable");
+        
+        draggableElements.forEach(elem => {
+            elem.addEventListener("dragstart", dragStart);
+			// para touch
+			elem.addEventListener('touchstart', touchStart);
+			elem.addEventListener('touchmove', touchmoveDrag);
+			elem.addEventListener('touchend', touchEnd);
+        });
+        
+        droppableElements.forEach(elem => {
+            elem.addEventListener("dragenter", dragEnter);
+            elem.addEventListener("dragover", dragOver);
+            elem.addEventListener("dragleave", dragLeave);
+            elem.addEventListener("drop", drop);
+        });
+        }
+    }
+{{/each}}
+
+// Drag and Drop
+
+//Events fired on the drag target
+function dragStart(event) {
+  event.dataTransfer.setData("text", event.target.id); // or "text/plain"
+}
+
+function touchStart(){
+	event.preventDefault();
+	console.log(event);
+	currentElementId = event.target.id
+	console.log(currentElementId);
+
+	let image = document.getElementById(currentElementId); 
+	// position the image to the touch, can be improve to detect the position of touch inside the image
+	let left = event.touches[0].pageX;
+	let top = event.touches[0].pageY;
+
+	document.getElementById('dragdrop0').appendChild(image);
+}
+
+function touchmoveDrag(event) {
+  // on touch move or dragging, we get the newly created image element
+  let image = document.getElementById(currentElementId)
+  // this will give us the dragging feeling of the element while actually it's a different element
+  let left = event.touches[0].pageX;
+  let top = event.touches[0].pageY;
+  image.style.position = 'absolute'
+  image.style.left = left + 'px';
+  image.style.top = top + 'px';
+  this.touchX = event.touches[0].pageX
+  this.touchY = event	.touches[0].pageY
+
+}
+
+function touchEnd(event){
+	event.preventDefault();
+
+	let image = document.getElementById(currentElementId);
+  let newImage = image.cloneNode(true);
+  
+	// get the dropzone of top and bottom
+	let droppableElements = document.querySelectorAll(".droppable");
+	let droppableRects = []
+	droppableElements.forEach(elem => {
+		droppableRects.push(elem.getBoundingClientRect())
+	})
+
+	let overlapArray = [];
+	// to detect the overlap of mouse into the dropzone, as alternative of mouseover
+	for (let i = 0; i < droppableRects.length; i++) {
+		let rect = droppableRects[i]
+		var overlap = !(rect.right < this.touchX ||
+						rect.left > this.touchX ||
+						rect.bottom < this.touchY ||
+						rect.top > this.touchY)
+		overlapArray.push(overlap);
+	}
+	console.log(overlapArray);
+
+	// get the stored reference
+	let ex = this;
+	console.log(ex);
+  let cuadritos = document.querySelectorAll('.droppable');
+  console.log(cuadritos);
+
+  // to detect the overlap of mouse into the dropzone bottom
+  if (overlapArray.includes(true)){
+    console.log(overlapArray.indexOf(true));
+    let cuadrito = cuadritos[overlapArray.indexOf(true)];
+    if (currentElementId == cuadrito.getAttribute('data-brand')){
+      newImage.setAttribute('style', 'position: static;');
+      cuadrito.appendChild(newImage);
+      cuadrito.classList.add("dropped");
+      cuadrito.classList.add("dragged");
+      console.log(cuadrito);
+      image.remove();
+    } else {
+      console.log('incorrecto');
+    }
+  }
+}
+
+//Events fired on the drop target
+function dragEnter(event) {
+  if(event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+    event.target.classList.add("droppable-hover");
+  }
+}
+
+function dragOver(event) {
+  if(event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+    event.preventDefault();
+  }
+}
+
+function dragLeave(event) {
+  if(event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+    event.target.classList.remove("droppable-hover");
+  }
+}
+
+function drop(event) {
+  event.preventDefault();
+  event.target.classList.remove("droppable-hover");
+  const draggableElementBrand = event.dataTransfer.getData("text");
+  const droppableElementBrand = event.target.getAttribute("data-brand");
+  const isCorrectMatching = draggableElementBrand===droppableElementBrand;
+  total++;
+  if(isCorrectMatching) {
+    const draggableElement = document.getElementById(draggableElementBrand);
+    console.log(draggableElement);
+    event.target.classList.add("dropped");
+    draggableElement.classList.add("dragged");
+    draggableElement.setAttribute("draggable", "false");
+    event.target.innerHTML = `<image class="draggable" src="${draggableElement.src}"></image>`;
+    correct++;  
+  }
+  if(correct===Math.min(totalMatchingPairs, totalDraggableItems)) { // Si se cumple es porque todas las parejas son correctas
+    console.log("Drag and drop completado");
+  }
+}
+
+// Auxiliary functions
+function generateRandomItemsArray(n, originalArray) {
+  let res = [];
+  let clonedArray = [...originalArray];
+  if(n>clonedArray.length) n=clonedArray.length;
+  for(let i=1; i<=n; i++) {
+    const randomIndex = Math.floor(Math.random()*clonedArray.length);
+    res.push(clonedArray[randomIndex]);
+    clonedArray.splice(randomIndex, 1);
+  }
+  return res;
+}
+
+function shuffle(array1) {
+        let currentIndex = array1.length,  randomIndex;
+
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            [array1[currentIndex], array1[randomIndex]] = [array1[randomIndex], array1[currentIndex]];
+        }
+
+        return array1;
+    }
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.score {
+  font-family: monospace;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.25rem;
+  margin: 1rem;
+  position: relative;
+  transition: opacity 0.2s;
+}
+#play-again-btn {
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  margin-left: -50px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #111;
+	border: 5px double #fff; 
+	border-radius: 14px;
+	padding: 8px 10px;  
+  outline: none;
+  letter-spacing: .05em;
+  cursor: pointer;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s, transform 0.5s, background-color 0.2s;
+}
+#play-again-btn:hover {
+  background-color: #333;
+}
+#play-again-btn:active {
+  background-color: #555;
+}
+#play-again-btn.play-again-btn-entrance {
+  opacity: 1;
+  transform: translateX(6rem);
+}
+.draggable-items {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 1rem 1.5rem 1rem;
+  transition: opacity 0.5s;
+}
+.draggable {
+  height: 5rem;
+  width: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 0rem 0.5rem;
+  cursor: move;
+  transition: opacity 0.2s;
+}
+.draggable:hover {
+  opacity: 0.5;
+}
+.matching-pairs {
+  transition: opacity 0.5s;
+}
+.matching-pair {
+  height: 6rem;
+  width: 22rem;
+  margin: 1rem auto;
+  display: flex;
+  justify-content: space-between;
+}
+.matching-pair span {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  user-select: none;
+}
+.label {
+  width: 15rem;
+  font-size: 2rem;
+}
+.droppable {
+  width: 6rem;
+  font-size: 4rem;
+  background-color: #fff;
+  border: 3px dashed #111;
+  transition: 0.2s;
+}
+.droppable-hover {
+  background-color: #bee3f0;
+  transform: scale(1.1);
+}
+.dropped {
+  border: 3px solid #0FFF50;
+}
+.dragged {
+  user-select: none;
+  opacity: 0.1;
+  cursor: default;
+}
+.draggable.dragged:hover {
+  opacity: 0.1;
+}
+
+@media (max-width: 600px) {
+  html { font-size: 14px; }
+  #play-again-btn { top: -0.4rem; }
+  #play-again-btn.play-again-btn-entrance { transform: translateX(7rem); }
+}
+</style>
